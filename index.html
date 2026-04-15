@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMIÈRE — Prestige Real Estate</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@200;300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: rgba(255,255,255,0.03);
+    --glass: rgba(255,255,255,0.06);
+    --glass-border: rgba(255,255,255,0.09);
+    --gold: #c9a96e;
+    --gold-light: #e8c990;
+    --text: #f0ece4;
+    --text-dim: rgba(240,236,228,0.45);
+    --text-mid: rgba(240,236,228,0.7);
+    --accent: #3a5a6e;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+  /* ─── BACKGROUND ORBS ─── */
+  .orb-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0;
+  }
+  .orb-1 { width: 700px; height: 700px; background: radial-gradient(circle, rgba(58,90,110,0.35) 0%, transparent 70%); top: -200px; left: -200px; }
+  .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 70%); top: 20%; right: -100px; }
+  .orb-3 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(58,90,110,0.2) 0%, transparent 70%); bottom: 10%; left: 30%; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 24px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(8,10,15,0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .nav-logo span { color: var(--gold); }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-mid);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-cta {
+    padding: 10px 28px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--bg); }
+
+  /* ─── HERO ─── */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 60px;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .hero-bg-slider {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    transform: scale(1.05);
+  }
+  .hero-slide.active { opacity: 1; transform: scale(1); transition: opacity 1.5s ease, transform 8s ease; }
+
+  .hero-slide-1 { background: linear-gradient(135deg, #1a2535 0%, #0d1520 100%), url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600&q=80') center/cover; background-blend-mode: multiply; }
+  .hero-slide-2 { background: linear-gradient(135deg, #1a2535 0%, #0d1520 100%), url('https://images.unsplash.com/photo-1613977257592-4871e5fcd7c4?w=1600&q=80') center/cover; background-blend-mode: multiply; }
+  .hero-slide-3 { background: linear-gradient(135deg, #1a2535 0%, #0d1520 100%), url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80') center/cover; background-blend-mode: multiply; }
+
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(8,10,15,0.05) 40%, rgba(8,10,15,0.01) 100%); z-index: 0; }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 680px;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+  }
+  .hero-eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--gold); }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    font-weight: 300;
+    line-height: 1.08;
+    margin-bottom: 28px;
+    opacity: 0;
+  }
+  .hero-title em { font-style: italic; color: var(--gold-light); }
+
+  .hero-subtitle {
+    font-size: 0.92rem;
+    color: var(--text-mid);
+    line-height: 1.8;
+    max-width: 420px;
+    margin-bottom: 48px;
+    opacity: 0;
+    font-weight: 200;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    opacity: 0;
+  }
+
+  .btn-primary {
+    padding: 16px 40px;
+    background: var(--gold);
+    color: var(--bg);
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  .btn-ghost {
+    padding: 16px 32px;
+    background: transparent;
+    color: var(--text-mid);
+    border: 1px solid var(--glass-border);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+  .hero-stats {
+    position: absolute;
+    bottom: 60px;
+    right: 60px;
+    display: flex;
+    gap: 48px;
+    z-index: 2;
+    opacity: 0;
+  }
+  .stat { text-align: right; }
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .hero-slide-dots {
+    position: absolute;
+    bottom: 70px;
+    left: 60px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+  }
+  .dot {
+    width: 24px;
+    height: 2px;
+    background: var(--glass-border);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active { background: var(--gold); width: 48px; }
+
+  /* ─── SECTION BASE ─── */
+  section { position: relative; z-index: 1; }
+
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--gold); }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    font-weight: 300;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  /* ─── FEATURED PROPERTIES ─── */
+  #properties {
+    padding: 120px 60px;
+  }
+
+  .properties-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 64px;
+  }
+
+  .view-all {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.3s;
+  }
+  .view-all:hover { gap: 16px; }
+
+  /* ─── PROPERTY SLIDER ─── */
+  .property-slider-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .property-track {
+    display: flex;
+    gap: 24px;
+    transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .property-card {
+    flex: 0 0 380px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    overflow: hidden;
+    position: relative;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: box-shadow 0.4s, transform 0.4s;
+  }
+  .property-card:hover { box-shadow: 0 30px 80px rgba(0,0,0,0.5); transform: translateY(-4px) !important; }
+
+  .card-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    display: block;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-img-bg {
+    width: 100%;
+    height: 280px;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.6s ease;
+  }
+  .property-card:hover .card-img-bg { transform: scale(1.06); }
+
+  .card-tag {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 6px 14px;
+    background: var(--gold);
+    color: var(--bg);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .card-fav {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    background: rgba(8,10,15,0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+  }
+  .card-fav:hover { border-color: var(--gold); }
+
+  .card-body {
+    padding: 28px;
+  }
+
+  .card-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .card-location {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-divider { height: 1px; background: var(--glass-border); margin-bottom: 20px; }
+
+  .card-specs {
+    display: flex;
+    gap: 20px;
+  }
+
+  .spec {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .spec-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .spec-key {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* Slider Controls */
+  .slider-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 40px;
+  }
+
+  .slider-btn {
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    color: var(--text-mid);
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slider-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.08); }
+
+  /* ─── MARQUEE ─── */
+  .marquee-section {
+    padding: 32px 0;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    overflow: hidden;
+    background: rgba(201,169,110,0.03);
+  }
+  .marquee-track {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee 28s linear infinite;
+  }
+  .marquee-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    flex-shrink: 0;
+  }
+  .marquee-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ─── FEATURED SHOWCASE ─── */
+  #showcase {
+    padding: 120px 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .showcase-images {
+    position: relative;
+    height: 600px;
+  }
+
+  .showcase-img-main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 75%;
+    height: 78%;
+    background-size: cover;
+    background-position: center;
+    background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80');
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  .showcase-img-accent {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 60%;
+    height: 50%;
+    background-size: cover;
+    background-position: center;
+    background-image: url('https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80');
+    border: 4px solid var(--bg);
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  .showcase-badge {
+    position: absolute;
+    top: 46%;
+    left: 60%;
+    z-index: 3;
+    background: rgba(8,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    padding: 20px 24px;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .badge-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .badge-text {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .showcase-text { opacity: 0; transform: translateX(40px); }
+
+  .showcase-text p {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    line-height: 1.9;
+    margin-bottom: 32px;
+    font-weight: 200;
+  }
+
+  .amenities {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .amenity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: var(--text-mid);
+    letter-spacing: 0.05em;
+  }
+  .amenity::before {
+    content: '◆';
+    font-size: 0.4rem;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* ─── GALLERY GRID ─── */
+  #gallery {
+    padding: 120px 60px;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(3, 220px);
+    gap: 16px;
+    margin-top: 64px;
+  }
+
+  .gallery-item {
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  .gallery-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(8,10,15,0.3);
+    transition: opacity 0.3s;
+  }
+  .gallery-item:hover::after { opacity: 0; }
+
+  .gallery-item:nth-child(1) { grid-column: 1 / 6; grid-row: 1 / 3; }
+  .gallery-item:nth-child(2) { grid-column: 6 / 9; grid-row: 1 / 2; }
+  .gallery-item:nth-child(3) { grid-column: 9 / 13; grid-row: 1 / 2; }
+  .gallery-item:nth-child(4) { grid-column: 6 / 9; grid-row: 2 / 3; }
+  .gallery-item:nth-child(5) { grid-column: 9 / 13; grid-row: 2 / 3; }
+  .gallery-item:nth-child(6) { grid-column: 1 / 4; grid-row: 3 / 4; }
+  .gallery-item:nth-child(7) { grid-column: 4 / 8; grid-row: 3 / 4; }
+  .gallery-item:nth-child(8) { grid-column: 8 / 13; grid-row: 3 / 4; }
+
+  .gallery-zoom {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.7s ease;
+  }
+  .gallery-item:hover .gallery-zoom { transform: scale(1.08); }
+
+  /* ─── TESTIMONIALS ─── */
+  #testimonials {
+    padding: 120px 60px;
+    background: linear-gradient(180deg, transparent 0%, rgba(58,90,110,0.05) 50%, transparent 100%);
+  }
+
+  .testimonials-header {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  .testimonials-header .section-label { justify-content: center; }
+  .testimonials-header .section-label::before { display: none; }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .testimonial-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    padding: 40px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .testimonial-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem;
+    color: var(--gold);
+    line-height: 0.6;
+    margin-bottom: 20px;
+    opacity: 0.4;
+  }
+
+  .testimonial-text {
+    font-size: 0.88rem;
+    color: var(--text-mid);
+    line-height: 1.85;
+    margin-bottom: 32px;
+    font-weight: 200;
+    font-style: italic;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--gold);
+    flex-shrink: 0;
+  }
+
+  .author-name {
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .author-detail {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* ─── CTA ─── */
+  #cta {
+    padding: 120px 60px;
+    text-align: center;
+  }
+
+  .cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(30px);
+    padding: 80px 60px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  .cta-inner::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .cta-inner .section-title { margin-bottom: 20px; }
+
+  .cta-inner p {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.8;
+    margin-bottom: 40px;
+  }
+
+  .cta-input-row {
+    display: flex;
+    gap: 0;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .cta-input {
+    flex: 1;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--glass-border);
+    border-right: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 200;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .cta-input:focus { border-color: var(--gold); }
+  .cta-input::placeholder { color: var(--text-dim); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 60px;
+    border-top: 1px solid var(--glass-border);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px;
+  }
+
+  .footer-brand .nav-logo { margin-bottom: 16px; display: block; }
+
+  .footer-brand p {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    max-width: 240px;
+    font-weight: 200;
+  }
+
+  .footer-col h4 {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    margin-bottom: 20px;
+  }
+
+  .footer-col ul { list-style: none; }
+  .footer-col ul li { margin-bottom: 10px; }
+  .footer-col ul a {
+    text-decoration: none;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    transition: color 0.3s;
+    font-weight: 200;
+  }
+  .footer-col ul a:hover { color: var(--gold); }
+
+  .footer-bottom {
+    padding: 24px 60px;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-bottom p { font-size: 0.72rem; color: var(--text-dim); }
+
+  /* ─── PARTICLES ─── */
+  .particle-field {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .particle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  /* ─── CURSOR ─── */
+  .cursor {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
+    mix-blend-mode: difference;
+  }
+
+  .cursor-ring {
+    position: fixed;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(201,169,110,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s, width 0.3s, height 0.3s;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    #hero, #properties, #gallery, #testimonials, #cta { padding-left: 24px; padding-right: 24px; }
+    #showcase { padding: 80px 24px; grid-template-columns: 1fr; }
+    .showcase-images { height: 400px; }
+    footer { grid-template-columns: 1fr 1fr; padding: 40px 24px; gap: 40px; }
+    .footer-bottom { padding: 20px 24px; flex-direction: column; gap: 8px; }
+    .hero-stats { right: 24px; gap: 24px; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .gallery-item { grid-column: auto !important; grid-row: auto !important; height: 200px; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Orbs -->
+<div class="orb-container">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- Particles -->
+<div class="particle-field" id="particleField"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">Lumière<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#properties">Properties</a></li>
+    <li><a href="#showcase">Showcase</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#testimonials">Stories</a></li>
+  </ul>
+  <button class="nav-cta">Book a Tour</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-slider">
+    <div class="hero-slide hero-slide-1 active" id="slide-0"></div>
+    <div class="hero-slide hero-slide-2" id="slide-1"></div>
+    <div class="hero-slide hero-slide-3" id="slide-2"></div>
+  </div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Prestige Collection 2025</div>
+    <h1 class="hero-title">Where Luxury<br>Finds Its <em>Home</em></h1>
+    <p class="hero-subtitle">Curated residences of extraordinary character. Each property handpicked for those who refuse to compromise on life's finest details.</p>
+    <div class="hero-actions">
+      <button class="btn-primary">Explore Properties</button>
+      <button class="btn-ghost">View Gallery</button>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-number">340+</div>
+      <div class="stat-label">Properties Sold</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">18</div>
+      <div class="stat-label">Years Experience</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">98%</div>
+      <div class="stat-label">Client Satisfaction</div>
+    </div>
+  </div>
+
+  <div class="hero-slide-dots">
+    <div class="dot active" onclick="goToSlide(0)"></div>
+    <div class="dot" onclick="goToSlide(1)"></div>
+    <div class="dot" onclick="goToSlide(2)"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <div class="marquee-item">Bel Air<div class="marquee-dot"></div>Beverly Hills<div class="marquee-dot"></div>Malibu<div class="marquee-dot"></div>Montecito<div class="marquee-dot"></div>Pacific Palisades<div class="marquee-dot"></div>Hollywood Hills<div class="marquee-dot"></div>Calabasas<div class="marquee-dot"></div>Laguna Beach<div class="marquee-dot"></div></div>
+    <div class="marquee-item">Bel Air<div class="marquee-dot"></div>Beverly Hills<div class="marquee-dot"></div>Malibu<div class="marquee-dot"></div>Montecito<div class="marquee-dot"></div>Pacific Palisades<div class="marquee-dot"></div>Hollywood Hills<div class="marquee-dot"></div>Calabasas<div class="marquee-dot"></div>Laguna Beach<div class="marquee-dot"></div></div>
+  </div>
+</div>
+
+<!-- FEATURED PROPERTIES -->
+<section id="properties">
+  <div class="properties-header">
+    <div>
+      <div class="section-label">Featured Listings</div>
+      <h2 class="section-title">Exceptional<br>Residences</h2>
+    </div>
+    <a href="#" class="view-all">View All Properties →</a>
+  </div>
+
+  <div class="property-slider-wrap">
+    <div class="property-track" id="propertyTrack">
+
+      <div class="property-card">
+        <div class="card-image">
+          <div class="card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80')"></div>
+          <div class="card-tag">For Sale</div>
+          <div class="card-fav">♡</div>
+        </div>
+        <div class="card-body">
+          <div class="card-price">$4,850,000</div>
+          <div class="card-title">Villa Serenity — Bel Air Estate</div>
+          <div class="card-location">📍 Bel Air, Los Angeles</div>
+          <div class="card-divider"></div>
+          <div class="card-specs">
+            <div class="spec"><span class="spec-val">6</span><span class="spec-key">Beds</span></div>
+            <div class="spec"><span class="spec-val">7</span><span class="spec-key">Baths</span></div>
+            <div class="spec"><span class="spec-val">8,200</span><span class="spec-key">Sq Ft</span></div>
+            <div class="spec"><span class="spec-val">0.9</span><span class="spec-key">Acres</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="property-card">
+        <div class="card-image">
+          <div class="card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80')"></div>
+          <div class="card-tag">New</div>
+          <div class="card-fav">♡</div>
+        </div>
+        <div class="card-body">
+          <div class="card-price">$12,400,000</div>
+          <div class="card-title">Ocean Crest — Malibu Compound</div>
+          <div class="card-location">📍 Malibu, California</div>
+          <div class="card-divider"></div>
+          <div class="card-specs">
+            <div class="spec"><span class="spec-val">8</span><span class="spec-key">Beds</span></div>
+            <div class="spec"><span class="spec-val">10</span><span class="spec-key">Baths</span></div>
+            <div class="spec"><span class="spec-val">12,500</span><span class="spec-key">Sq Ft</span></div>
+            <div class="spec"><span class="spec-val">2.1</span><span class="spec-key">Acres</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="property-card">
+        <div class="card-image">
+          <div class="card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600&q=80')"></div>
+          <div class="card-tag">Premium</div>
+          <div class="card-fav">♡</div>
+        </div>
+        <div class="card-body">
+          <div class="card-price">$7,200,000</div>
+          <div class="card-title">Highland Haven — Hollywood Hills</div>
+          <div class="card-location">📍 Hollywood Hills, LA</div>
+          <div class="card-divider"></div>
+          <div class="card-specs">
+            <div class="spec"><span class="spec-val">5</span><span class="spec-key">Beds</span></div>
+            <div class="spec"><span class="spec-val">6</span><span class="spec-key">Baths</span></div>
+            <div class="spec"><span class="spec-val">6,800</span><span class="spec-key">Sq Ft</span></div>
+            <div class="spec"><span class="spec-val">0.6</span><span class="spec-key">Acres</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="property-card">
+        <div class="card-image">
+          <div class="card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80')"></div>
+          <div class="card-tag">Exclusive</div>
+          <div class="card-fav">♡</div>
+        </div>
+        <div class="card-body">
+          <div class="card-price">$18,900,000</div>
+          <div class="card-title">Montecito Manor — Private Estate</div>
+          <div class="card-location">📍 Montecito, Santa Barbara</div>
+          <div class="card-divider"></div>
+          <div class="card-specs">
+            <div class="spec"><span class="spec-val">9</span><span class="spec-key">Beds</span></div>
+            <div class="spec"><span class="spec-val">11</span><span class="spec-key">Baths</span></div>
+            <div class="spec"><span class="spec-val">15,200</span><span class="spec-key">Sq Ft</span></div>
+            <div class="spec"><span class="spec-val">3.4</span><span class="spec-key">Acres</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="property-card">
+        <div class="card-image">
+          <div class="card-img-bg" style="background-image:url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80')"></div>
+          <div class="card-tag">For Sale</div>
+          <div class="card-fav">♡</div>
+        </div>
+        <div class="card-body">
+          <div class="card-price">$3,600,000</div>
+          <div class="card-title">Pacific Pines — Laguna Retreat</div>
+          <div class="card-location">📍 Laguna Beach, California</div>
+          <div class="card-divider"></div>
+          <div class="card-specs">
+            <div class="spec"><span class="spec-val">4</span><span class="spec-key">Beds</span></div>
+            <div class="spec"><span class="spec-val">5</span><span class="spec-key">Baths</span></div>
+            <div class="spec"><span class="spec-val">4,400</span><span class="spec-key">Sq Ft</span></div>
+            <div class="spec"><span class="spec-val">0.4</span><span class="spec-key">Acres</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="slider-controls">
+    <button class="slider-btn" id="prevBtn">←</button>
+    <button class="slider-btn" id="nextBtn">→</button>
+  </div>
+</section>
+
+<!-- SHOWCASE -->
+<section id="showcase">
+  <div class="showcase-images">
+    <div class="showcase-img-main"></div>
+    <div class="showcase-img-accent"></div>
+    <div class="showcase-badge">
+      <div class="badge-num">#1</div>
+      <div class="badge-text">Luxury Broker<br>California 2025</div>
+    </div>
+  </div>
+  <div class="showcase-text">
+    <div class="section-label">Our Philosophy</div>
+    <h2 class="section-title">Homes That Tell<br>Their Own <em>Story</em></h2>
+    <p>We believe a home is not merely a structure — it is a living expression of who you are. Our curated collection spans architectural masterworks from modernist canyon hideaways to Mediterranean coastal palaces.</p>
+    <div class="amenities">
+      <div class="amenity">Infinity Swimming Pools</div>
+      <div class="amenity">Private Home Theaters</div>
+      <div class="amenity">Wine Cellars & Tasting Rooms</div>
+      <div class="amenity">Smart Home Systems</div>
+      <div class="amenity">Gated Security</div>
+      <div class="amenity">Guest Houses</div>
+      <div class="amenity">Tennis Courts</div>
+      <div class="amenity">Panoramic Views</div>
+    </div>
+    <button class="btn-primary">Discover More</button>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="section-label">Visual Tour</div>
+  <h2 class="section-title">Life in <em>Detail</em></h2>
+  <div class="gallery-grid">
+    <div class="gallery-item"><div class="gallery-zoom" style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80')"></div></div>
+    <div class="gallery-item"><div class="gallery-zoom" style="background-image:url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80')"></div></div>
+    <div class="gallery-item"><div class="gallery-zoom" style="background-image:url('https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=600&q=80')"></div></div>
+    <div class="gallery-item"><div class="gallery-zoom" style="background-image:url('https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=600&q=80')"></div></div>
+    <div class="gallery-item"><div class="gallery-zoom" style="background-image:url('https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&q=80')"></div></div>
+    <div class="gallery-item"><div class="gallery-zoom" style="background-image:url('https://images.unsplash.com/photo-1613977257363-707ba9348227?w=600&q=80')"></div></div>
+    <div class="gallery-item"><div class="gallery-zoom" style="background-image:url('https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=800&q=80')"></div></div>
+    <div class="gallery-item"><div class="gallery-zoom" style="background-image:url('https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=800&q=80')"></div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="testimonials-header">
+    <div class="section-label">Client Stories</div>
+    <h2 class="section-title">Voices of <em>Trust</em></h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">Working with Lumière was a transformative experience. They didn't just find us a house — they found us our forever home in Montecito. The attention to detail is unlike anything we've seen in 30 years of property ownership.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background-image:url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80')"></div>
+        <div>
+          <div class="author-name">James Hartfield</div>
+          <div class="author-detail">CEO, Vertex Capital</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">The process was seamless from beginning to end. Our agent understood exactly what we were looking for — something that felt like a European villa but with California light. They delivered beyond expectations.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background-image:url('https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&q=80')"></div>
+        <div>
+          <div class="author-name">Sofia Marchetti</div>
+          <div class="author-detail">Fashion Designer, Milan & LA</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="testimonial-quote">"</div>
+      <p class="testimonial-text">I've purchased properties across three continents. Lumière offers a caliber of service I've rarely encountered. They are simply the gold standard in California luxury real estate.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background-image:url('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80')"></div>
+        <div>
+          <div class="author-name">Marcus Chen</div>
+          <div class="author-detail">Founder, Meridian Group</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-inner">
+    <div class="section-label" style="justify-content:center;"><span style="display:none"></span>Begin Your Journey</div>
+    <h2 class="section-title">Find Your<br><em>Extraordinary</em></h2>
+    <p>Let our advisors guide you to a property that matches not just your requirements, but your vision of the life you deserve.</p>
+    <div class="cta-input-row">
+      <input type="email" placeholder="Your email address" class="cta-input">
+      <button class="btn-primary" style="white-space:nowrap">Get Started</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <span class="nav-logo">Lumière<span style="color:var(--gold)">.</span></span>
+    <p>California's most trusted luxury real estate advisory firm since 2007. We represent the finest properties for the most discerning clientele.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Properties</h4>
+    <ul>
+      <li><a href="#">Bel Air</a></li>
+      <li><a href="#">Beverly Hills</a></li>
+      <li><a href="#">Malibu</a></li>
+      <li><a href="#">Montecito</a></li>
+      <li><a href="#">Hollywood Hills</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Services</h4>
+    <ul>
+      <li><a href="#">Buy</a></li>
+      <li><a href="#">Sell</a></li>
+      <li><a href="#">Rent</a></li>
+      <li><a href="#">Property Management</a></li>
+      <li><a href="#">Concierge</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Company</h4>
+    <ul>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Our Team</a></li>
+      <li><a href="#">Press</a></li>
+      <li><a href="#">Careers</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2025 Lumière Real Estate. All rights reserved.</p>
+  <p style="color:var(--text-dim);font-size:0.72rem;">Privacy Policy · Terms · Accessibility</p>
+</div>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ─── CURSOR ───
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0.1 });
+});
+
+function animateRing() {
+  ringX += (mouseX - ringX) * 0.12;
+  ringY += (mouseY - ringY) * 0.12;
+  gsap.set(ring, { x: ringX, y: ringY });
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+
+document.querySelectorAll('button, a, .property-card, .gallery-item').forEach(el => {
+  el.addEventListener('mouseenter', () => gsap.to([cursor, ring], { width: 48, height: 48, opacity: 0.5, duration: 0.3 }));
+  el.addEventListener('mouseleave', () => gsap.to([cursor, ring], { width: 8, height: 8, opacity: 1, duration: 0.3 }));
+});
+
+// ─── PARTICLES ───
+const pf = document.getElementById('particleField');
+for (let i = 0; i < 40; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.top = Math.random() * 100 + '%';
+  pf.appendChild(p);
+  gsap.to(p, {
+    opacity: Math.random() * 0.6 + 0.1,
+    y: -(Math.random() * 200 + 100),
+    x: (Math.random() - 0.5) * 60,
+    duration: Math.random() * 8 + 6,
+    repeat: -1,
+    delay: Math.random() * 6,
+    ease: 'none',
+    yoyo: true
+  });
+}
+
+// ─── ORB ANIMATIONS ───
+gsap.to('.orb-1', { opacity: 1, duration: 2, ease: 'power2.out' });
+gsap.to('.orb-2', { opacity: 1, duration: 2.5, delay: 0.3, ease: 'power2.out' });
+gsap.to('.orb-3', { opacity: 1, duration: 3, delay: 0.6, ease: 'power2.out' });
+
+gsap.to('.orb-1', { x: 60, y: 40, duration: 12, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+gsap.to('.orb-2', { x: -40, y: -60, duration: 15, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+gsap.to('.orb-3', { x: 80, y: 30, duration: 18, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+// ─── HERO ANIMATIONS ───
+const heroTL = gsap.timeline({ delay: 0.2 });
+
+heroTL
+  .to('#navbar', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
+  .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.4')
+  .to('.hero-title', {
+    opacity: 1,
+    y: 0,
+    duration: 1.1,
+    ease: 'power3.out',
+    onStart: function() {
+      gsap.fromTo('.hero-title', { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 1.1, ease: 'power3.out' });
+    }
+  }, '-=0.5')
+  .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.6')
+  .to('.hero-actions', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.5')
+  .to('.hero-stats', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.4');
+
+// Floating hero content
+gsap.to('.hero-content', {
+  y: -20,
+  duration: 4,
+  repeat: -1,
+  yoyo: true,
+  ease: 'sine.inOut',
+  delay: 2
+});
+
+// ─── HERO SLIDER ───
+let currentSlide = 0;
+const slides = document.querySelectorAll('.hero-slide');
+const dots = document.querySelectorAll('.dot');
+
+function goToSlide(n) {
+  slides[currentSlide].classList.remove('active');
+  dots[currentSlide].classList.remove('active');
+  currentSlide = (n + slides.length) % slides.length;
+  slides[currentSlide].classList.add('active');
+  dots[currentSlide].classList.add('active');
+}
+
+setInterval(() => goToSlide(currentSlide + 1), 5000);
+
+// ─── PROPERTY SLIDER ───
+let trackOffset = 0;
+const cardW = 380 + 24;
+const track = document.getElementById('propertyTrack');
+const maxSlide = (5 - 3) * cardW;
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  if (trackOffset < maxSlide) {
+    trackOffset += cardW;
+    gsap.to(track, { x: -trackOffset, duration: 0.7, ease: 'power3.out' });
+  }
+});
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if (trackOffset > 0) {
+    trackOffset -= cardW;
+    gsap.to(track, { x: -trackOffset, duration: 0.7, ease: 'power3.out' });
+  }
+});
+
+// ─── SCROLL ANIMATIONS ───
+
+// Property cards stagger
+gsap.to('.property-card', {
+  opacity: 1,
+  y: 0,
+  duration: 0.8,
+  stagger: 0.15,
+  ease: 'power3.out',
+  scrollTrigger: {
+    trigger: '#properties',
+    start: 'top 80%'
+  }
+});
+
+// Showcase
+gsap.to('.showcase-img-main', {
+  opacity: 1,
+  x: 0,
+  duration: 1.1,
+  ease: 'power3.out',
+  scrollTrigger: { trigger: '#showcase', start: 'top 75%' }
+});
+
+gsap.to('.showcase-img-accent', {
+  opacity: 1,
+  x: 0,
+  duration: 1.1,
+  delay: 0.3,
+  ease: 'power3.out',
+  scrollTrigger: { trigger: '#showcase', start: 'top 75%' }
+});
+
+gsap.to('.showcase-badge', {
+  opacity: 1,
+  y: 0,
+  duration: 0.9,
+  delay: 0.5,
+  ease: 'back.out(1.5)',
+  scrollTrigger: { trigger: '#showcase', start: 'top 75%' }
+});
+
+gsap.to('.showcase-text', {
+  opacity: 1,
+  x: 0,
+  duration: 1,
+  delay: 0.2,
+  ease: 'power3.out',
+  scrollTrigger: { trigger: '#showcase', start: 'top 75%' }
+});
+
+// Gallery items
+document.querySelectorAll('.gallery-item').forEach((item, i) => {
+  gsap.to(item, {
+    opacity: 1,
+    duration: 0.7,
+    delay: i * 0.08,
+    ease: 'power2.out',
+    scrollTrigger: { trigger: '#gallery', start: 'top 80%' }
+  });
+});
+
+// Testimonials
+gsap.to('.testimonial-card', {
+  opacity: 1,
+  y: 0,
+  duration: 0.8,
+  stagger: 0.2,
+  ease: 'power3.out',
+  scrollTrigger: { trigger: '#testimonials', start: 'top 80%' }
+});
+
+// CTA
+gsap.to('.cta-inner', {
+  opacity: 1,
+  y: 0,
+  duration: 1,
+  ease: 'power3.out',
+  scrollTrigger: { trigger: '#cta', start: 'top 80%' }
+});
+
+// Parallax on section labels
+gsap.utils.toArray('.section-label').forEach(el => {
+  gsap.fromTo(el, { x: -15, opacity: 0 }, {
+    x: 0, opacity: 1, duration: 0.7,
+    scrollTrigger: { trigger: el, start: 'top 90%' }
+  });
+});
+
+// Number counter for hero stats
+function animateCounter(el, target) {
+  let obj = { val: 0 };
+  gsap.to(obj, {
+    val: target,
+    duration: 2,
+    delay: 1.5,
+    ease: 'power2.out',
+    onUpdate: () => {
+      el.textContent = Math.round(obj.val) + (el.dataset.suffix || '');
+    }
+  });
+}
+
+// Smooth parallax scroll effect on hero content
+ScrollTrigger.create({
+  trigger: '#hero',
+  start: 'top top',
+  end: 'bottom top',
+  onUpdate: (self) => {
+    gsap.to('.hero-content', { y: self.progress * 80, ease: 'none', overwrite: true });
+    gsap.to('.hero-stats', { y: self.progress * 40, ease: 'none', overwrite: true });
+  }
+});
+
+// ─── SECTION TITLE REVEAL ───
+gsap.utils.toArray('.section-title').forEach(title => {
+  gsap.fromTo(title,
+    { y: 30, opacity: 0 },
+    {
+      y: 0, opacity: 1, duration: 1,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: title, start: 'top 85%' }
+    }
+  );
+});
+
+// Magnetic effect on buttons
+document.querySelectorAll('.btn-primary, .btn-ghost, .nav-cta').forEach(btn => {
+  btn.addEventListener('mousemove', function(e) {
+    const rect = this.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    gsap.to(this, { x: x * 0.2, y: y * 0.2, duration: 0.3 });
+  });
+  btn.addEventListener('mouseleave', function() {
+    gsap.to(this, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.4)' });
+  });
+});
+
+// Nav scroll behavior
+ScrollTrigger.create({
+  start: 'top -80',
+  onUpdate: (self) => {
+    const nav = document.getElementById('navbar');
+    if (self.direction === 1) {
+      nav.style.background = 'rgba(8,10,15,0.85)';
+    } else {
+      nav.style.background = 'rgba(8,10,15,0.4)';
+    }
+  }
+});
+</script>
+</body>
+</html>
