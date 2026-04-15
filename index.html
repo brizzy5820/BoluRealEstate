@@ -8,6 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <style>
+
   :root {
     --bg: #080a0f;
     --surface: rgba(255,255,255,0.03);
@@ -883,7 +884,30 @@
     .gallery-item { grid-column: auto !important; grid-row: auto !important; height: 200px; }
     .testimonials-grid { grid-template-columns: 1fr; }
   }
+  /* GLOBAL FIXES */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+* {
+  max-width: 100%;
+}
+
+/* FLEX + GRID OVERFLOW FIX */
+.property-track,
+.gallery-grid,
+.testimonials-grid {
+  width: 100%;
+}
+
+/* IMAGES NEVER OVERFLOW */
+img, .card-img-bg, .gallery-zoom {
+  max-width: 100%;
+  height: auto;
+}
 </style>
+
 </head>
 <body>
 
